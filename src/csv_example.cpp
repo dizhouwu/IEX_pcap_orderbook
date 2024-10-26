@@ -50,14 +50,20 @@ int main(int argc, char* argv[]) {
       auto quote_msg = dynamic_cast<QuoteUpdateMessage*>(msg_ptr.get());
 
       // Check the pointer and write all L1 ticks for ticker 'AMD' to file.
-      if (quote_msg && quote_msg->symbol == "AMD") {
-        out_stream << quote_msg->timestamp << ","
+      // if (quote_msg && quote_msg->symbol == "AMD") {
+      //   out_stream << quote_msg->timestamp << ","
+      //              << quote_msg->symbol << ","
+      //              << quote_msg->bid_size << ","
+      //              << quote_msg->bid_price << ","
+      //              << quote_msg->ask_size << ","
+      //              << quote_msg->ask_price << std::endl;
+      // }
+      out_stream << quote_msg->timestamp << ","
                    << quote_msg->symbol << ","
                    << quote_msg->bid_size << ","
                    << quote_msg->bid_price << ","
                    << quote_msg->ask_size << ","
                    << quote_msg->ask_price << std::endl;
-      }
     }
   }
   out_stream.close();
