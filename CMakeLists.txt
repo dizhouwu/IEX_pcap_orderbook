@@ -1,48 +1,26 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(iex_pcap)
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 ############################################################
 ### PcapPlusPlus
 
-if(WIN32)
-        SET(OS_CONFIG_COMMAND "configure-windows-mingw.bat")
-endif()
-IF(APPLE)
-        SET(OS_CONFIG_COMMAND "configure-mac_os_x.sh")
-endif()
-IF(UNIX AND NOT APPLE)
-        SET(OS_CONFIG_COMMAND "configure-linux.sh")
-endif()
+# Set paths for the installed PcapPlusPlus library and headers
+find_path(PCAPPLUSPLUS_INCLUDE_DIR NAMES "PcapPlusPlusVersion.h" PATHS "/usr/local/include/pcapplusplus" REQUIRED)
+find_library(PCAPPLUSPLUS_COMMON_LIB NAMES "Common++" PATHS "/usr/local/lib" REQUIRED)
+find_library(PCAPPLUSPLUS_PACKET_LIB NAMES "Packet++" PATHS "/usr/local/lib" REQUIRED)
+find_library(PCAPPLUSPLUS_PCAP_LIB NAMES "Pcap++" PATHS "/usr/local/lib" REQUIRED)
 
-include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-ExternalProject_Add(project_pcapplusplus
-        GIT_REPOSITORY "https://github.com/seladb/PcapPlusPlus"
-        GIT_TAG "master"
-
-        UPDATE_COMMAND ""
-        PATCH_COMMAND ""
-
-        SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/pcapplusplus"
-        CONFIGURE_COMMAND ./${OS_CONFIG_COMMAND} --default
-
-        BUILD_COMMAND make
-        BUILD_IN_SOURCE 1
-
-        INSTALL_COMMAND ""
-
-        TEST_COMMAND ""
-)
-
-# Add the link and include directories from the external library.
-link_directories("3rdparty/pcapplusplus/Dist")
-include_directories("3rdparty/pcapplusplus/Dist/header")
+include_directories(${PCAPPLUSPLUS_INCLUDE_DIR})
+link_directories("/usr/local/lib")
 
 ############################################################
 ### Gtest
 
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 ExternalProject_Add(googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG "main"  # Updated to use the "main" branch
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
 
@@ -61,29 +39,23 @@ set(GTEST_LIBS_DIR ${binary_dir}/lib)
 include_directories(${GTEST_INCLUDE_DIRS})
 link_directories(${GTEST_LIBS_DIR})
 
-
 ############################################################
 ### IEX library
 include_directories("include")
 
-SET(EXT_LIBRARIES Packet++
-                  Pcap++
-                  Common++
+SET(EXT_LIBRARIES ${PCAPPLUSPLUS_PACKET_LIB}
+                  ${PCAPPLUSPLUS_PCAP_LIB}
+                  ${PCAPPLUSPLUS_COMMON_LIB}
                   pcap)
 
 add_library(iex_pcap "src/iex_decoder.cpp" "src/iex_messages")
 install(TARGETS iex_pcap DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-add_dependencies(iex_pcap project_pcapplusplus)
 add_dependencies(iex_pcap googletest)
 
-add_executable(csv_example  "src/csv_example.cpp")
+add_executable(csv_example "src/csv_example.cpp")
 target_link_libraries(csv_example iex_pcap ${EXT_LIBRARIES})
 install(TARGETS csv_example DESTINATION ${CMAKE_SOURCE_DIR}/bin)
-
 
 ### Unit tests
 add_executable(test_iex "test/test.cpp")
 target_link_libraries(test_iex gtest gmock iex_pcap pthread ${EXT_LIBRARIES})
-
-
-
