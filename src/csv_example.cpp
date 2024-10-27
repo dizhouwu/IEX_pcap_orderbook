@@ -1,5 +1,5 @@
 #include "iex_decoder.h"
-
+#include "orderbook.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -31,44 +31,46 @@ int main(int argc, char* argv[]) {
     std::cout << "Failed to open file '" << input_file << "'." << std::endl;
     return 1;
   }
+  std::unordered_map<std::string, OrderBook> order_books;
 
   // Get the first message from the pcap file.
   std::unique_ptr<IEXMessageBase> msg_ptr;
   auto ret_code = decoder.GetNextMessage(msg_ptr);
-
-  // Main loop to loop through all messages.
+  // Main loop to process all messages.
   for (; ret_code == ReturnCode::Success; ret_code = decoder.GetNextMessage(msg_ptr)) {
+      auto* msg_base = msg_ptr.get();
+      std::string symbol = msg_base->GetSymbol();
 
-    // For quick message introspection:
-    // msg_ptr->Print();
-    // Uncommenting this will completely dominate your terminal with output.
+      if ((!symbol.empty()) && (symbol == "AWP")){
+          // Ensure there's an OrderBook for the symbol; create if it doesn't exist.
+          auto& ob = order_books[symbol];
 
-    // There are many different message types. Here we just look for quote update (L1 tick).
-    if (msg_ptr->GetMessageType() == MessageType::PriceLevelUpdateBuy) {
+          // Process the message for the symbol-specific order book.
+          ob.ProcessMessage(std::move(msg_ptr));
 
-      // Cast it to the derived type.
-      auto quote_msg = dynamic_cast<PriceLevelUpdateMessage*>(msg_ptr.get());
+          // Print book pressure after each message.
+          double book_pressure = ob.GetBookPressure();
+          std::cout << "Symbol: " << symbol << ", Book Pressure: " << book_pressure << std::endl;
+          ob.PrintTopLevels();
+      }
 
-      // Check the pointer and write all L1 ticks for ticker 'AMD' to file.
-      // if (quote_msg && quote_msg->symbol == "AMD") {
-      //   out_stream << quote_msg->timestamp << ","
-      //              << quote_msg->symbol << ","
-      //              << quote_msg->bid_size << ","
-      //              << quote_msg->bid_price << ","
-      //              << quote_msg->ask_size << ","
-      //              << quote_msg->ask_price << std::endl;
+
+  
+      // // Optional: Check if it's a PriceLevelUpdate for 'AMD' to write details to the output file.
+      // if (msg_base->GetMessageType() == MessageType::PriceLevelUpdateBuy || 
+      //     msg_base->GetMessageType() == MessageType::PriceLevelUpdateSell) {
+
+      //     auto* quote_msg = dynamic_cast<PriceLevelUpdateMessage*>(msg_base);
+
+      //     if (quote_msg && quote_msg->symbol == "AMD") {
+      //         out_stream << quote_msg->timestamp << ","
+      //                     << quote_msg->symbol << ","
+      //                     << quote_msg->size << ","
+      //                     << quote_msg->price << std::endl;
+      //     }
       // }
-        out_stream << quote_msg->timestamp << ","
-                   << quote_msg->symbol << ","
-                   << quote_msg->size << ","
-                   << quote_msg->price << "," << std::endl;
-      // out_stream << quote_msg->timestamp << ","
-      //              << quote_msg->symbol << ","
-      //              << quote_msg->bid_size << ","
-      //              << quote_msg->bid_price << ","
-      //              << quote_msg->ask_size << ","
-      //              << quote_msg->ask_price << std::endl;
-    }
+      // Move to the next message in the stream
+      ret_code = decoder.GetNextMessage(msg_ptr);
   }
   out_stream.close();
   return 0;

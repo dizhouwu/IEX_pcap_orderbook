@@ -109,6 +109,7 @@ class IEXMessageBase {
 
   /// \brief Print contents of message to standard output.
   virtual void Print() const = 0;
+  virtual std::string GetSymbol() const { return ""; }
 
   /// \brief Return message type.
   MessageType GetMessageType() const { return message_type; }
@@ -215,6 +216,7 @@ struct SecurityDirectoryMessage : public IEXMessageBase {
 
   /// \brief Indicates which Limit Up-Limit Down price band calculation parameter is to be used.
   LULDTier LULD_tier;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct TradingStatusMessage : public IEXMessageBase {
@@ -244,6 +246,7 @@ struct TradingStatusMessage : public IEXMessageBase {
 
   /// \brief Reason for the trading status change
   std::string reason;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct OperationalHaltStatusMessage : public IEXMessageBase {
@@ -268,6 +271,7 @@ struct OperationalHaltStatusMessage : public IEXMessageBase {
 
   /// \brief Security Identifier.
   std::string symbol;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct ShortSalePriceTestStatusMessage : public IEXMessageBase {
@@ -297,6 +301,7 @@ struct ShortSalePriceTestStatusMessage : public IEXMessageBase {
 
   /// \brief Detail code.
   Detail detail;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct QuoteUpdateMessage : public IEXMessageBase {
@@ -328,6 +333,7 @@ struct QuoteUpdateMessage : public IEXMessageBase {
 
   /// \brief Price Best quoted ask price.
   double ask_price;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct TradeReportMessage : public IEXMessageBase {
@@ -358,6 +364,7 @@ struct TradeReportMessage : public IEXMessageBase {
 
   /// \brief IEX Generated Identifier. Trade ID is also referenced in the Trade Break Message.
   int trade_id;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct OfficialPriceMessage : public IEXMessageBase {
@@ -385,6 +392,7 @@ struct OfficialPriceMessage : public IEXMessageBase {
 
   /// \brief Official opening or closing price, as specified.
   double price;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct AuctionInformationMessage : public IEXMessageBase {
@@ -451,6 +459,7 @@ struct AuctionInformationMessage : public IEXMessageBase {
 
   /// \brief Upper threshold price of the auction collar, if any.
   double upper_auction_collar;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct PriceLevelUpdateMessage : public IEXMessageBase {
@@ -476,6 +485,7 @@ struct PriceLevelUpdateMessage : public IEXMessageBase {
 
   /// \brief Price level to add/update in the IEX Order Book.
   double price;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct SecurityEventMessage : public IEXMessageBase {
@@ -500,6 +510,7 @@ struct SecurityEventMessage : public IEXMessageBase {
 
   /// \brief Security Identifier.
   std::string symbol;
+  virtual std::string GetSymbol() const override { return symbol; }
 };
 
 

@@ -48,7 +48,7 @@ SET(EXT_LIBRARIES ${PCAPPLUSPLUS_PACKET_LIB}
                   ${PCAPPLUSPLUS_COMMON_LIB}
                   pcap)
 
-add_library(iex_pcap "src/iex_decoder.cpp" "src/iex_messages")
+add_library(iex_pcap "src/iex_decoder.cpp" "src/iex_messages.cpp" "src/orderbook.cpp")
 install(TARGETS iex_pcap DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 add_dependencies(iex_pcap googletest)
 
@@ -56,9 +56,6 @@ add_executable(csv_example "src/csv_example.cpp")
 target_link_libraries(csv_example iex_pcap ${EXT_LIBRARIES})
 install(TARGETS csv_example DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
-add_executable(orderbook_test "src/orderbook.cpp")
-target_link_libraries(orderbook_test iex_pcap ${EXT_LIBRARIES})
-install(TARGETS orderbook_test DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 ### Unit tests
 add_executable(test_iex "test/test.cpp")
