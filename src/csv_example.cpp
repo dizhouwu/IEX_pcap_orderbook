@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
     // Uncommenting this will completely dominate your terminal with output.
 
     // There are many different message types. Here we just look for quote update (L1 tick).
-    if (msg_ptr->GetMessageType() == MessageType::QuoteUpdate) {
+    if (msg_ptr->GetMessageType() == MessageType::PriceLevelUpdateBuy) {
 
       // Cast it to the derived type.
-      auto quote_msg = dynamic_cast<QuoteUpdateMessage*>(msg_ptr.get());
+      auto quote_msg = dynamic_cast<PriceLevelUpdateMessage*>(msg_ptr.get());
 
       // Check the pointer and write all L1 ticks for ticker 'AMD' to file.
       // if (quote_msg && quote_msg->symbol == "AMD") {
@@ -58,12 +58,16 @@ int main(int argc, char* argv[]) {
       //              << quote_msg->ask_size << ","
       //              << quote_msg->ask_price << std::endl;
       // }
-      out_stream << quote_msg->timestamp << ","
+        out_stream << quote_msg->timestamp << ","
                    << quote_msg->symbol << ","
-                   << quote_msg->bid_size << ","
-                   << quote_msg->bid_price << ","
-                   << quote_msg->ask_size << ","
-                   << quote_msg->ask_price << std::endl;
+                   << quote_msg->size << ","
+                   << quote_msg->price << "," << std::endl;
+      // out_stream << quote_msg->timestamp << ","
+      //              << quote_msg->symbol << ","
+      //              << quote_msg->bid_size << ","
+      //              << quote_msg->bid_price << ","
+      //              << quote_msg->ask_size << ","
+      //              << quote_msg->ask_price << std::endl;
     }
   }
   out_stream.close();

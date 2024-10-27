@@ -56,6 +56,10 @@ add_executable(csv_example "src/csv_example.cpp")
 target_link_libraries(csv_example iex_pcap ${EXT_LIBRARIES})
 install(TARGETS csv_example DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
+add_executable(orderbook_test "src/orderbook.cpp")
+target_link_libraries(orderbook_test iex_pcap ${EXT_LIBRARIES})
+install(TARGETS orderbook_test DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
 ### Unit tests
 add_executable(test_iex "test/test.cpp")
 target_link_libraries(test_iex gtest gmock iex_pcap pthread ${EXT_LIBRARIES})
