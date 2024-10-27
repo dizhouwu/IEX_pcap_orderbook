@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
       auto* msg_base = msg_ptr.get();
       std::string symbol = msg_base->GetSymbol();
 
-      if ((!symbol.empty()) && (symbol == "AWP")){
+      if ((!symbol.empty()) && (symbol == "ZIEXT")){
           // Ensure there's an OrderBook for the symbol; create if it doesn't exist.
           auto& ob = order_books[symbol];
 
@@ -51,7 +51,8 @@ int main(int argc, char* argv[]) {
           // Print book pressure after each message.
           double book_pressure = ob.GetBookPressure();
           std::cout << "Symbol: " << symbol << ", Book Pressure: " << book_pressure << std::endl;
-          ob.PrintTopLevels();
+          ob.PrintBbo();
+          ob.PrintOrderBook();
       }
 
 

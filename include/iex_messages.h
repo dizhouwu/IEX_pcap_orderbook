@@ -464,6 +464,10 @@ struct AuctionInformationMessage : public IEXMessageBase {
 
 struct PriceLevelUpdateMessage : public IEXMessageBase {
   PriceLevelUpdateMessage(const MessageType& msg_type) { message_type = msg_type; }
+  PriceLevelUpdateMessage(const MessageType& msg_type, const std::string& symbol, double price, int size, uint8_t flags)
+        : symbol(symbol), price(price), size(size), flags(flags) {
+        message_type = msg_type;
+    }
 
   /// \brief Decode the data stream to a message struct.
   ///

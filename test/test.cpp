@@ -256,7 +256,3 @@ TEST_F(DecoderTest, SecurityEventTest) {
             SecurityEventMessage::SecurityMessageType::OpeningProcessComplete);
 }
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

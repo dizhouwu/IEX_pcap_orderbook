@@ -20,7 +20,7 @@ link_directories("/usr/local/lib")
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 ExternalProject_Add(googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG "main"  # Updated to use the "main" branch
+    GIT_TAG "main"
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
 
@@ -48,15 +48,27 @@ SET(EXT_LIBRARIES ${PCAPPLUSPLUS_PACKET_LIB}
                   ${PCAPPLUSPLUS_COMMON_LIB}
                   pcap)
 
+# Build iex_pcap library
 add_library(iex_pcap "src/iex_decoder.cpp" "src/iex_messages.cpp" "src/orderbook.cpp")
-install(TARGETS iex_pcap DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS iex_pcap DESTINATION "${CMAKE_SOURCE_DIR}/lib")
 add_dependencies(iex_pcap googletest)
 
+# Build example executable
 add_executable(csv_example "src/csv_example.cpp")
 target_link_libraries(csv_example iex_pcap ${EXT_LIBRARIES})
-install(TARGETS csv_example DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+install(TARGETS csv_example DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 
+# Find Google Test
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
-### Unit tests
-add_executable(test_iex "test/test.cpp")
+# Set test directory and gather test sources
+set(TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
+file(GLOB TEST_SOURCES "${TEST_DIR}/*.cpp")
+
+# Unit tests executable
+add_executable(test_iex ${TEST_SOURCES} "test/test_main.cpp")
 target_link_libraries(test_iex gtest gmock iex_pcap pthread ${EXT_LIBRARIES})
+
+# Optional: set installation prefix for easier local testing
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
