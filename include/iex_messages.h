@@ -490,6 +490,7 @@ struct PriceLevelUpdateMessage : public IEXMessageBase {
   /// \brief Price level to add/update in the IEX Order Book.
   double price;
   virtual std::string GetSymbol() const override { return symbol; }
+
 };
 
 struct SecurityEventMessage : public IEXMessageBase {

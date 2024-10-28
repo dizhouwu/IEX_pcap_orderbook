@@ -36,6 +36,8 @@ void OrderBook::ProcessMessage(std::unique_ptr<IEXMessageBase> message) {
                         price_level_update->price,
                         price_level_update->size
                     );
+                    price_level_update->Print();
+                    std::cout<<"update bbo when it is 1 level take out" <<std::endl;
                     UpdateBBO(); // Update BBO immediately for non-atomic updates
                 }
             }
@@ -102,6 +104,7 @@ void OrderBook::applyAtomicUpdates(const std::string& symbol) {
     for (const auto& update : updates) {
         UpdateOrderBook(update.GetMessageType(), update.symbol, update.price, update.size);
     }
+    std::cout << "updating bbo after applying" << std::endl;
     UpdateBBO(); // Update BBO after atomic updates are applied
 }
 
@@ -115,7 +118,9 @@ void OrderBook::UpdateBBO() {
         std::cout << "Updating BBO..." << std::endl;
         std::cout << "Best Bid: " << best_bid.first << " (Size: " << best_bid.second << ")" << std::endl;
         std::cout << "Best Ask: " << best_ask.first << " (Size: " << best_ask.second << ")" << std::endl;
-
+        for (auto x: ask_levels){
+            std::cout  << "ask price: " <<  x.first << " ask qty" << x.second<<std::endl;
+        }
         // Create a new BBO instance
         current_bbo = BBO{
             best_bid.first, // Bid price

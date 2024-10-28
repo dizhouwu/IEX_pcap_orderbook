@@ -21,8 +21,6 @@ public:
     // Constructor that enforces the bid <= ask constraint
     BBO(double bid_price, int bid_size, double ask_price, int ask_size)
         : bid_price(bid_price), bid_size(bid_size), ask_price(ask_price), ask_size(ask_size) {
-        std::cout << "bid price: " << bid_price <<std::endl;
-        std::cout <<"ask price: " <<ask_price <<std::endl;
         if (bid_price > ask_price) {
             throw std::invalid_argument("bid_price cannot be greater than ask_price");
         }
