@@ -208,7 +208,18 @@ struct SystemEventMessage : public IEXMessageBase {
   /// \brief System event identifier.
   Code system_event;
 };
-struct RetailLiquidityIndicatorMessage : public IEXMessageBase {}
+struct RetailLiquidityIndicatorMessage : public IEXMessageBase {
+  enum class RetailLiquidityInd { NotApplicable = 0x20, BuyInterest = 0x41, SellInterest = 0x42, BuyAndSellInterest = 0x43 };
+
+  RetailLiquidityIndicatorMessage() { message_type = MessageType::RetailLiquidityIndicator;}
+
+  virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+  /// \brief Print contents of message to standard output.
+  virtual void Print() const override;
+  std::string symbol;
+  
+}
 struct SecurityDirectoryMessage : public IEXMessageBase {
   enum class LULDTier { NotApplicable = 0x0, Tier1NMSStock = 0x1, Tier2NMSStock = 0x2 };
 
