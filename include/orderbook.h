@@ -66,7 +66,7 @@ public:
     std::optional<BBO> GetBbo() const;
 
     // Process incoming messages
-    void ProcessMessage(std::unique_ptr<IEXMessageBase> message);
+    void ProcessMessage(const IEXMessageBase& message);
 
     // Update the order book based on the message type
     void UpdateOrderBook(MessageType type, const std::string& symbol, double price, int size);
@@ -82,10 +82,10 @@ public:
 
 private:
     // Start atomic update by adding the message to the atomic update map
-    void startAtomicUpdate(PriceLevelUpdateMessage* update);
+    void startAtomicUpdate(const PriceLevelUpdateMessage* update);
 
     // End atomic update and apply all updates for the symbol
-    void endAtomicUpdate(PriceLevelUpdateMessage* update);
+    void endAtomicUpdate(const PriceLevelUpdateMessage* update);
 
     // Apply all atomic updates for a symbol, then update the BBO
     void applyAtomicUpdates(const std::string& symbol);

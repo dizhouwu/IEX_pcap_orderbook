@@ -14,11 +14,12 @@ std::optional<BBO> OrderBook::GetBbo() const {
 }
 
 // Process incoming messages
-void OrderBook::ProcessMessage(std::unique_ptr<IEXMessageBase> message) {
-    auto message_type = message->GetMessageType();
+void OrderBook::ProcessMessage(const IEXMessageBase& message) {
+    auto message_type = message.GetMessageType();
 
     if (message_type == MessageType::PriceLevelUpdateBuy || message_type == MessageType::PriceLevelUpdateSell) {
-        auto* price_level_update = dynamic_cast<PriceLevelUpdateMessage*>(message.get());
+        // Perform a dynamic cast to safely interpret the message as PriceLevelUpdateMessage
+        auto* price_level_update = dynamic_cast<const PriceLevelUpdateMessage*>(&message);
 
         if (price_level_update) {
             if (price_level_update->flags == 0) {
@@ -37,13 +38,14 @@ void OrderBook::ProcessMessage(std::unique_ptr<IEXMessageBase> message) {
                         price_level_update->size
                     );
                     price_level_update->Print();
-                    std::cout<<"update bbo when it is 1 level take out" <<std::endl;
+                    std::cout << "update BBO when it is 1 level take out" << std::endl;
                     UpdateBBO(); // Update BBO immediately for non-atomic updates
                 }
             }
         }
     }
 }
+
 
 // Update the order book based on the message type
 void OrderBook::UpdateOrderBook(MessageType type, const std::string& symbol, double price, int size) {
@@ -86,12 +88,12 @@ void OrderBook::PrintBbo() const {
 }
 
 // Start atomic update by adding the message to the atomic update map
-void OrderBook::startAtomicUpdate(PriceLevelUpdateMessage* update) {
+void OrderBook::startAtomicUpdate(const PriceLevelUpdateMessage* update) {
     atomicUpdates[update->symbol].push_back(*update);
 }
 
 // End atomic update and apply all updates for the symbol
-void OrderBook::endAtomicUpdate(PriceLevelUpdateMessage* update) {
+void OrderBook::endAtomicUpdate(const PriceLevelUpdateMessage* update) {
     auto& updates = atomicUpdates[update->symbol];
     updates.push_back(*update);
     applyAtomicUpdates(update->symbol);
