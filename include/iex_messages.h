@@ -39,6 +39,7 @@ enum class MessageType {
   SecurityDirectory = 0x44,
   SecurityEvent = 0x45,
   TradingStatus = 0x48,
+  RetailLiquidityIndicator = 0x49,
   OperationalHaltStatus = 0x4f,
   ShortSalePriceTestStatus = 0x50,
   QuoteUpdate = 0x51,
@@ -47,7 +48,13 @@ enum class MessageType {
   TradeBreak = 0x42,
   AuctionInformation = 0x41,
   PriceLevelUpdateBuy = 0x38,
-  PriceLevelUpdateSell = 0x35
+  PriceLevelUpdateSell = 0x35,
+  AddOrder = 0x61,
+  OrderModify = 0x4D,
+  OrderDelete = 0x52,
+  OrderExecuted = 0x4C,
+  Trade = 0x54,
+  ClearBook = 0x43
 };
 
 /// \brief Convert the message code to a readable string.
@@ -55,39 +62,53 @@ enum class MessageType {
 /// \param The message enum type.
 /// \return The type as a string. Output hex code when no matching code found.
 inline std::string MessageTypeToString(const MessageType& msg_enum) {
-  std::string hex_code = " (" + PRINTHEX(msg_enum) + ")";
-  switch (msg_enum) {
-    case MessageType::StreamHeader:
-      return "Header Message";
-    case MessageType::SystemEvent:
-      return "SystemEvent" + hex_code;
-    case MessageType::SecurityDirectory:
-      return "SecurityDirectory" + hex_code;
-    case MessageType::TradingStatus:
-      return "TradingStatus" + hex_code;
-    case MessageType::OperationalHaltStatus:
-      return "OperationalHaltStatus" + hex_code;
-    case MessageType::ShortSalePriceTestStatus:
-      return "ShortSalePriceTestStatus" + hex_code;
-    case MessageType::QuoteUpdate:
-      return "QuoteUpdate" + hex_code;
-    case MessageType::TradeReport:
-      return "TradeReport" + hex_code;
-    case MessageType::OfficialPrice:
-      return "OfficialPrice" + hex_code;
-    case MessageType::TradeBreak:
-      return "TradeBreak" + hex_code;
-    case MessageType::AuctionInformation:
-      return "AuctionInformation" + hex_code;
-    case MessageType::PriceLevelUpdateBuy:
-      return "PriceLevelUpdateBuy" + hex_code;
-    case MessageType::PriceLevelUpdateSell:
-      return "PriceLevelUpdateSell" + hex_code;
-    case MessageType::SecurityEvent:
-      return "SecurityEvent" + hex_code;
-    default:
-      return "Unknown" + hex_code;
-  }
+    std::string hex_code = " (" + PRINTHEX(msg_enum) + ")";
+    switch (msg_enum) {
+        case MessageType::StreamHeader:
+            return "Header Message" + hex_code;
+        case MessageType::SystemEvent:
+            return "SystemEvent" + hex_code;
+        case MessageType::SecurityDirectory:
+            return "SecurityDirectory" + hex_code;
+        case MessageType::SecurityEvent:
+            return "SecurityEvent" + hex_code;
+        case MessageType::TradingStatus:
+            return "TradingStatus" + hex_code;
+        case MessageType::RetailLiquidityIndicator:
+            return "RetailLiquidityIndicator" + hex_code;
+        case MessageType::OperationalHaltStatus:
+            return "OperationalHaltStatus" + hex_code;
+        case MessageType::ShortSalePriceTestStatus:
+            return "ShortSalePriceTestStatus" + hex_code;
+        case MessageType::QuoteUpdate:
+            return "QuoteUpdate" + hex_code;
+        case MessageType::TradeReport:
+            return "TradeReport" + hex_code;
+        case MessageType::OfficialPrice:
+            return "OfficialPrice" + hex_code;
+        case MessageType::TradeBreak:
+            return "TradeBreak" + hex_code;
+        case MessageType::AuctionInformation:
+            return "AuctionInformation" + hex_code;
+        case MessageType::PriceLevelUpdateBuy:
+            return "PriceLevelUpdateBuy" + hex_code;
+        case MessageType::PriceLevelUpdateSell:
+            return "PriceLevelUpdateSell" + hex_code;
+        case MessageType::AddOrder:
+            return "AddOrder" + hex_code;
+        case MessageType::OrderModify:
+            return "OrderModify" + hex_code;
+        case MessageType::OrderDelete:
+            return "OrderDelete" + hex_code;
+        case MessageType::OrderExecuted:
+            return "OrderExecuted" + hex_code;
+        case MessageType::ClearBook:
+            return "ClearBook" + hex_code;
+        case MessageType::NoData:
+            return "NoData" + hex_code;
+        default:
+            return "Unknown" + hex_code;
+    }
 }
 
 /// \class IEXMessageBase
@@ -187,7 +208,7 @@ struct SystemEventMessage : public IEXMessageBase {
   /// \brief System event identifier.
   Code system_event;
 };
-
+struct RetailLiquidityIndicatorMessage : public IEXMessageBase {}
 struct SecurityDirectoryMessage : public IEXMessageBase {
   enum class LULDTier { NotApplicable = 0x0, Tier1NMSStock = 0x1, Tier2NMSStock = 0x2 };
 
