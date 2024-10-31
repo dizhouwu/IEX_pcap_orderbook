@@ -1,5 +1,7 @@
 #include "iex_messages.h"
 #include <algorithm>
+#include <sale_condition.h>
+
 
 /// \brief Templated function for dereferencing and casting a uint8_t pointer to a desired type.
 ///
@@ -223,6 +225,8 @@ void OfficialPriceMessage::Print() const {
   IEX_LOG("Official price    : " << price);
 }
 
+
+
 bool AuctionInformationMessage::Decode(const uint8_t* data_ptr) {
   auction_type = static_cast<AuctionType>(GetNumeric<uint8_t>(data_ptr, 1));
   timestamp = GetNumeric<uint64_t>(data_ptr, 2);
@@ -296,6 +300,80 @@ void SecurityEventMessage::Print() const {
   IEX_LOG("SecurityEvent     : " << static_cast<char>(security_event));
 }
 
+bool RetailLiquidityIndicatorMessage::Decode(const uint8_t* data_ptr) {
+    timestamp = GetNumeric<uint64_t>(data_ptr, 2);
+    symbol = GetString(data_ptr, 10, 8);
+    return ValidateTimestamp(timestamp);
+}
+
+void RetailLiquidityIndicatorMessage::Print() const {
+    IEX_LOG("Message type      : " << MessageTypeToString(message_type));
+    IEX_LOG("Timestamp         : " << timestamp);
+    IEX_LOG("Symbol            : " << symbol);
+}
+
+bool AddOrderMessage::Decode(const uint8_t* data_ptr) {
+    timestamp = GetNumeric<uint64_t>(data_ptr, 2);
+    order_id = GetNumeric<uint64_t>(data_ptr, 10);
+    size = GetNumeric<uint32_t>(data_ptr, 18);
+    price = GetPrice(data_ptr, 22);
+    return ValidateTimestamp(timestamp);
+}
+
+void AddOrderMessage::Print() const {
+    IEX_LOG("Message type      : " << MessageTypeToString(message_type));
+    IEX_LOG("Timestamp         : " << timestamp);
+    IEX_LOG("Order ID          : " << order_id);
+    IEX_LOG("Size              : " << size);
+    IEX_LOG("Price             : " << price);
+}
+
+bool OrderModifyMessage::Decode(const uint8_t* data_ptr) {
+    timestamp = GetNumeric<uint64_t>(data_ptr, 2);
+    order_id_ref = GetNumeric<uint64_t>(data_ptr, 10);
+    size = GetNumeric<uint32_t>(data_ptr, 18);
+    price = GetPrice(data_ptr, 22);
+    return ValidateTimestamp(timestamp);
+}
+
+void OrderModifyMessage::Print() const {
+    IEX_LOG("Message type      : " << MessageTypeToString(message_type));
+    IEX_LOG("Timestamp         : " << timestamp);
+    IEX_LOG("Order ID Ref      : " << order_id_ref);
+    IEX_LOG("Size              : " << size);
+    IEX_LOG("Price             : " << price);
+}
+
+bool OrderDeleteMessage::Decode(const uint8_t* data_ptr) {
+    timestamp = GetNumeric<uint64_t>(data_ptr, 2);
+    order_id_ref = GetNumeric<uint64_t>(data_ptr, 10);
+    return ValidateTimestamp(timestamp);
+}
+
+void OrderDeleteMessage::Print() const {
+    IEX_LOG("Message type      : " << MessageTypeToString(message_type));
+    IEX_LOG("Timestamp         : " << timestamp);
+    IEX_LOG("Order ID Ref      : " << order_id_ref);
+}
+
+bool OrderExecutedMessage::Decode(const uint8_t* data_ptr) {
+    timestamp = GetNumeric<uint64_t>(data_ptr, 2);
+    order_id_ref = GetNumeric<uint64_t>(data_ptr, 10);
+    size = GetNumeric<uint32_t>(data_ptr, 18);
+    price = GetPrice(data_ptr, 22);
+    trade_id = GetNumeric<uint64_t>(data_ptr, 30);
+    return ValidateTimestamp(timestamp);
+}
+
+void OrderExecutedMessage::Print() const {
+    IEX_LOG("Message type      : " << MessageTypeToString(message_type));
+    IEX_LOG("Timestamp         : " << timestamp);
+    IEX_LOG("Order ID Ref      : " << order_id_ref);
+    IEX_LOG("Size              : " << size);
+    IEX_LOG("Price             : " << price);
+    IEX_LOG("Trade ID          : " << trade_id);
+}
+
 std::unique_ptr<IEXMessageBase> IEXMessageFactory(const uint8_t* msg_data_ptr) {
   int msg_type = *msg_data_ptr;
   auto msg_enum = static_cast<MessageType>(msg_type);
@@ -329,3 +407,5 @@ std::unique_ptr<IEXMessageBase> IEXMessageFactory(const uint8_t* msg_data_ptr) {
   }
   return NULL;
 }
+
+

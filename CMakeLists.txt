@@ -58,6 +58,11 @@ add_executable(csv_example "src/csv_example.cpp")
 target_link_libraries(csv_example iex_pcap ${EXT_LIBRARIES})
 install(TARGETS csv_example DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 
+add_executable(deep_plus_example "src/deep_plus_example.cpp")
+target_link_libraries(deep_plus_example iex_pcap ${EXT_LIBRARIES})
+install(TARGETS deep_plus_example DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+
+
 # Find Google Test
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})

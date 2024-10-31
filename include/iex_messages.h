@@ -4,6 +4,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <sale_condition.h>
 
 // Note: All information for this implementation was taken from the IEX TOPS specification v1.6
 //       For further information visit:
@@ -218,8 +219,87 @@ struct RetailLiquidityIndicatorMessage : public IEXMessageBase {
   /// \brief Print contents of message to standard output.
   virtual void Print() const override;
   std::string symbol;
+};
+
+struct AddOrderMessage : public IEXMessageBase {
+    enum class Side { Buy = 0x38, Sell = 0x35};
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
+    uint8_t order_id;
+    uint8_t size;
+    Side side;
+    double price;
+};
+
+struct OrderModifyMessage : public IEXMessageBase {
+    enum class ModifyFlags { ResetPriority = 0, MaintainPriority = 1};
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
+    uint8_t order_id_ref;
+    uint8_t size;
+    double price;
+    ModifyFlags flags;
+};
+
+struct OrderDeleteMessage : public IEXMessageBase { 
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
+    uint8_t reserved1;          
+    std::string symbol;             
+    uint8_t order_id_ref;            
+};
+
+struct OrderExecutedMessage : public IEXMessageBase {
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
+    SaleCondition sale_condition;
+    uint8_t order_id_ref;
+    uint8_t size;
+    double price;
+    uint8_t trade_id;
+};
+
+
+struct TradeMessage : public IEXMessageBase {
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
   
-}
+    SaleCondition sale_condition;
+    uint8_t size;
+    double price;
+    uint8_t trade_id;
+};
+
+struct TradeBreakMessage : public IEXMessageBase {
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
+    SaleCondition sale_condition;
+    uint8_t size;
+    double price;
+    uint8_t trade_id;
+};
+
+struct ClearBookMessage : public IEXMessageBase {
+    virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
+
+    /// \brief Print contents of message to standard output.
+    virtual void Print() const override;
+    uint8_t reserved1;          
+};
+
+
 struct SecurityDirectoryMessage : public IEXMessageBase {
   enum class LULDTier { NotApplicable = 0x0, Tier1NMSStock = 0x1, Tier2NMSStock = 0x2 };
 
@@ -552,3 +632,4 @@ struct SecurityEventMessage : public IEXMessageBase {
 
 
 std::unique_ptr<IEXMessageBase> IEXMessageFactory(const uint8_t* msg_data_ptr);
+
