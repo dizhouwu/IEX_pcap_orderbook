@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <sale_condition.h>
+#include <order.h>
 
 // Note: All information for this implementation was taken from the IEX TOPS specification v1.6
 //       For further information visit:
@@ -222,7 +223,7 @@ struct RetailLiquidityIndicatorMessage : public IEXMessageBase {
 };
 
 struct AddOrderMessage : public IEXMessageBase {
-    enum class Side { Buy = 0x38, Sell = 0x35};
+ 
     virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
 
     /// \brief Print contents of message to standard output.
@@ -231,10 +232,12 @@ struct AddOrderMessage : public IEXMessageBase {
     uint8_t size;
     Side side;
     double price;
+    std::string symbol;
+    virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct OrderModifyMessage : public IEXMessageBase {
-    enum class ModifyFlags { ResetPriority = 0, MaintainPriority = 1};
+    
     virtual bool Decode(const uint8_t* data_ptr) override WARN_UNUSED;
 
     /// \brief Print contents of message to standard output.
@@ -243,6 +246,8 @@ struct OrderModifyMessage : public IEXMessageBase {
     uint8_t size;
     double price;
     ModifyFlags flags;
+    std::string symbol;
+    virtual std::string GetSymbol() const override { return symbol; }
 };
 
 struct OrderDeleteMessage : public IEXMessageBase { 
@@ -252,7 +257,8 @@ struct OrderDeleteMessage : public IEXMessageBase {
     virtual void Print() const override;
     uint8_t reserved1;          
     std::string symbol;             
-    uint8_t order_id_ref;            
+    uint8_t order_id_ref;           
+    virtual std::string GetSymbol() const override { return symbol; } 
 };
 
 struct OrderExecutedMessage : public IEXMessageBase {
@@ -265,6 +271,8 @@ struct OrderExecutedMessage : public IEXMessageBase {
     uint8_t size;
     double price;
     uint8_t trade_id;
+    std::string symbol;
+    virtual std::string GetSymbol() const override { return symbol; } 
 };
 
 
@@ -278,6 +286,8 @@ struct TradeMessage : public IEXMessageBase {
     uint8_t size;
     double price;
     uint8_t trade_id;
+    std::string symbol;
+    virtual std::string GetSymbol() const override { return symbol; } 
 };
 
 struct TradeBreakMessage : public IEXMessageBase {

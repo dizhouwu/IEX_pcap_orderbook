@@ -49,7 +49,7 @@ SET(EXT_LIBRARIES ${PCAPPLUSPLUS_PACKET_LIB}
                   pcap)
 
 # Build iex_pcap library
-add_library(iex_pcap "src/iex_decoder.cpp" "src/iex_messages.cpp" "src/orderbook.cpp")
+add_library(iex_pcap "src/iex_decoder.cpp" "src/iex_messages.cpp" "src/orderbook.cpp" "src/l3book.cpp")
 install(TARGETS iex_pcap DESTINATION "${CMAKE_SOURCE_DIR}/lib")
 add_dependencies(iex_pcap googletest)
 
