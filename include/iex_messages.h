@@ -55,7 +55,6 @@ enum class MessageType {
   OrderModify = 0x4D,
   OrderDelete = 0x52,
   OrderExecuted = 0x4C,
-  Trade = 0x54,
   ClearBook = 0x43
 };
 
